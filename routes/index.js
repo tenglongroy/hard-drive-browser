@@ -9,8 +9,13 @@ router.get('/', function(req, res, next) {
 });
 
 
-/* for Ajax call, show specified path */
+/* for first visit, show root structure */
 router.get('/show-path', function(req, res, next) {
+  res.render('index', { currentFolder: 'qwetfgdfbk;n qeh oeh rar' });
+});
+
+/* for Ajax call, show specified path structure */
+router.get('/ajax-show-path', function(req, res, next) {
   res.render('index', { currentFolder: 'qwetfgdfbk;n qeh oeh rar' });
 });
 

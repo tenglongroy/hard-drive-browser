@@ -28,6 +28,8 @@ catch(err){
     process.exit(-1);
 }
 
+var rootStructure = {};
+
 
 
 
@@ -35,19 +37,25 @@ catch(err){
 function _DFSTraverse(objectName, prefix, level){
 	var currentPath = path.join(prefix, objectName);
 	if(fs.statSync(currentPath).isFile()){
-		return {'name': objectName, 'type': path.extname(currentPath), 'desc': null, 'prefix': prefix, 'level': level};
+		return {'name': objectName, 'type': path.extname(objectName), 'desc': null, 'prefix': prefix, 'level': level};
 	}
 	var currentList = fs.readdirSync(currentPath);
 	var currentStructure = {'name': objectName, 'type': 'folder', 'desc': {}, 'prefix': prefix, 'level': level};
+	if(currentList.length == 0){
+		currentStructure['desc'] = null;
+		return currentStructure;
+	}
+	
 	for(var i = 0; i<currentList.length; i++){
 		var result = _DFSTraverse(currentList[i], currentPath, level+1);
 		currentStructure['desc'][currentList[i]] = result;
-		//console.log(result);
 	}
 	return currentStructure;
 };
 
-// wrapper function, to wrap the recursion
+/* wrapper function, to wrap the recursion
+   return the structure for rootPath
+*/
 function DFSTraverse(targetPath){
 	var temp = path.parse(targetPath);
 	return _DFSTraverse(temp['base'], temp['dir'], 1);
@@ -55,15 +63,18 @@ function DFSTraverse(targetPath){
 
 // use breadth first search to recursively print this tree-like JSON
 function _printStructure(currentDict, preSpace){
-	if(currentDict['name'] == 'node_modules')
+	if(currentDict['name'] == 'node_modules' || currentDict['name'] == '.git' )
 		return;
+	/*if(currentDict['name'] == 'public'){
+		console.log(JSON.stringify(currentDict['desc']));
+	}*/
 	console.log();
-	console.log(preSpace+'{\n'+preSpace+'  '+currentDict['name']);
-	console.log(preSpace+'  '+currentDict['type']);
-	console.log(preSpace+'  '+currentDict['level']);
-	console.log(preSpace+'  '+currentDict['prefix']);
-	//console.log(preSpace+currentDict['desc']);
+	console.log(preSpace+'{\n'+preSpace+'  name:'+currentDict['name']);
+	console.log(preSpace+'  type:'+currentDict['type']);
+	console.log(preSpace+'  level:'+currentDict['level']);
+	console.log(preSpace+'  prefix:'+currentDict['prefix']);
 	if(currentDict['desc'] != null){
+		console.log(preSpace+'  desc:');
 		Object.keys(currentDict['desc']).forEach(function(key) {
 			//console.log(key);
 			_printStructure(currentDict['desc'][key], preSpace+'  ');
@@ -117,14 +128,51 @@ function getUpdatedStructure(){
 	return DFSTraverse(rootPath);
 };
 
-printStructure();
+function getAjaxStructure(objectName, prefix, level){
+	if(!checkPath(path.join(prefix, objectName))){
+		return false;
+	}
+	var realPrefix = prefix.replace(rootPath, '');
+	var descKeys = realPrefix.split(path.sep).filter(function(item){
+		return item != '';
+	});
+	descKeys.push(objectName);
+	//console.log(descKeys);
+	var nextStructure = rootStructure;
+	for(var i = 0; i<descKeys.length && nextStructure!= null; i++){
+		nextStructure = nextStructure['desc'];
+		nextStructure = nextStructure[descKeys[i]];
+	}
+	//console.log(nextStructure);
+	return nextStructure;
+};
+
+// left strip a specified char
+function trimLeft(string, charToRemove) {
+    while(string.charAt(0)==charToRemove) {
+        string = string.substring(1);
+    }
+};
+
+function getRootStructure(){
+	return rootStructure;
+}
+
+
+rootStructure = DFSTraverse(rootPath);
+
+//printStructure();
+//getAjaxStructure('stylesheets', 'C:\\Users\\tengl\\Node\\hard-drive-browser\\public', 100);
+
 
 module.exports = browseFile;
 module.exports = {
 	'printStructure': printStructure,
 	'DFSTraverse': DFSTraverse,
+	'showRootPath': showRootPath,
 	'updatePath': updatePath,
 	'getUpdatedStructure': getUpdatedStructure,
-	'showRootPath': showRootPath
+	'getRootStructure': getRootStructure,
+	'getAjaxStructure': getAjaxStructure
 };
 //module.exports = app;
