@@ -128,7 +128,15 @@ function getUpdatedStructure(){
 	return DFSTraverse(rootPath);
 };
 
-function getAjaxStructure(objectName, prefix, level){
+function getFileAjax(objectName, prefix){
+	var realPath = path.join(prefix, objectName);
+	if(!checkPath(realPath)){
+		return false;
+	}
+	fs.readFile()
+};
+
+function getStructureAjax(objectName, prefix, level){
 	if(!checkPath(path.join(prefix, objectName))){
 		return false;
 	}
@@ -162,7 +170,7 @@ function getRootStructure(){
 rootStructure = DFSTraverse(rootPath);
 
 //printStructure();
-//getAjaxStructure('stylesheets', 'C:\\Users\\tengl\\Node\\hard-drive-browser\\public', 100);
+//getStructureAjax('stylesheets', 'C:\\Users\\tengl\\Node\\hard-drive-browser\\public', 100);
 
 
 module.exports = browseFile;
@@ -173,6 +181,6 @@ module.exports = {
 	'updatePath': updatePath,
 	'getUpdatedStructure': getUpdatedStructure,
 	'getRootStructure': getRootStructure,
-	'getAjaxStructure': getAjaxStructure
+	'getStructureAjax': getStructureAjax
 };
 //module.exports = app;
