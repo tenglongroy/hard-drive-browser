@@ -170,14 +170,17 @@ function getFileAjax(req, res){
         res.end();
 	}
 
-	var rstream = fs.createReadStream(realPath);
+	fs.readFile(realPath, function(err, data){
+		if(err){
+			res.writeHead(404, 'Not Found');
+            res.write('404: File Not Found!');
+            return res.end();
+        }
 
-	// Handle non-existent file
-    rstream.on('error', function(error) {
-        res.writeHead(404, 'Not Found');
-        res.write('404: File Not Found!');
-        res.end();
-    });
+        res.statusCode = 200;
+        res.write(data);
+        return res.end();
+	});
 
     // File exists, stream it to user
     res.statusCode = 200;
