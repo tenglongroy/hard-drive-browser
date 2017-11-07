@@ -4,7 +4,9 @@ var browseFile = express();
 var fs = require('fs');
 var path = require('path');
 
-//var rootPath = path.normalize("D:\\");
+/*var randomString = require("randomstring");
+var accessCode = randomString.generate();*/
+
 var rootPath = '';
 
 /*if (process.argv.length <= 2) {
@@ -128,15 +130,66 @@ function getUpdatedStructure(){
 	return DFSTraverse(rootPath);
 };
 
-function getFileAjax(objectName, prefix){
+/* designated for video Ajax call,
+   using pipe to stream the data
+*/
+//function getFileAjax(objectName, prefix){
+function getvideoAjax(req, res){
+	var objectName = req.query.objectName;
+	var prefix = req.query.prefix;
 	var realPath = path.join(prefix, objectName);
 	if(!checkPath(realPath)){
-		return false;
+		res.writeHead(404, 'Not Found');
+        res.write('404: File Not Found!');
+        res.end();
 	}
-	fs.readFile()
+
+	var rstream = fs.createReadStream(realPath);
+
+	// Handle non-existent file
+    rstream.on('error', function(error) {
+        res.writeHead(404, 'Not Found');
+        res.write('404: File Not Found!');
+        res.end();
+    });
+
+    // File exists, stream it to user
+    res.statusCode = 200;
+    rstream.pipe(res);
+};
+/* for all other types of file's Ajax call,
+   use cache to speed up and reduce I/O
+*/
+function getFileAjax(req, res){
+	var objectName = req.query.objectName;
+	var prefix = req.query.prefix;
+	var realPath = path.join(prefix, objectName);
+	if(!checkPath(realPath)){
+		res.writeHead(404, 'Not Found');
+        res.write('404: File Not Found!');
+        res.end();
+	}
+
+	var rstream = fs.createReadStream(realPath);
+
+	// Handle non-existent file
+    rstream.on('error', function(error) {
+        res.writeHead(404, 'Not Found');
+        res.write('404: File Not Found!');
+        res.end();
+    });
+
+    // File exists, stream it to user
+    res.statusCode = 200;
+    rstream.pipe(res);
 };
 
-function getStructureAjax(objectName, prefix, level){
+// get Ajax call, and return corresponding structure
+//function getStructureAjax(objectName, prefix, level){
+function getStructureAjax(req, res){
+	var objectName = req.query.objectName;
+	var prefix = req.query.prefix; 
+	var level = req.query.level;
 	if(!checkPath(path.join(prefix, objectName))){
 		return false;
 	}
@@ -152,7 +205,8 @@ function getStructureAjax(objectName, prefix, level){
 		nextStructure = nextStructure[descKeys[i]];
 	}
 	//console.log(nextStructure);
-	return nextStructure;
+	//return nextStructure;
+	res.
 };
 
 // left strip a specified char
@@ -160,6 +214,7 @@ function trimLeft(string, charToRemove) {
     while(string.charAt(0)==charToRemove) {
         string = string.substring(1);
     }
+    return string;
 };
 
 function getRootStructure(){
@@ -184,3 +239,16 @@ module.exports = {
 	'getStructureAjax': getStructureAjax
 };
 //module.exports = app;
+
+
+// probably put the structure on left, with toggle on/off. and the main content can show on middle
+// when the left panel is closed, make the main content responsive to the whole screen
+
+/*https://medium.com/@daspinola/video-stream-with-node-js-and-html5-320b3191a6b6
+http://codewinds.com/blog/2013-08-02-streams-basics.html
+http://stackabuse.com/node-http-servers-for-static-file-serving/*/
+
+/*
+https://www.npmjs.com/package/lru-cache
+http://www.ronniesan.com/using-lru-cache-in-nodejs/
+*/
