@@ -179,12 +179,8 @@ function getFileAjax(req, res){
 
         res.statusCode = 200;
         res.write(data);
-        return res.end();
+        //return res.end();
 	});
-
-    // File exists, stream it to user
-    res.statusCode = 200;
-    rstream.pipe(res);
 };
 
 // get Ajax call, and return corresponding structure
@@ -209,7 +205,7 @@ function getStructureAjax(req, res){
 	}
 	//console.log(nextStructure);
 	//return nextStructure;
-	res.
+	res.write(JSON.stringify(nextStructure));
 };
 
 // left strip a specified char
