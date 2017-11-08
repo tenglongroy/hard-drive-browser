@@ -2,6 +2,8 @@
 extends layout
 
 block content
-	div#(video-page)
+	div#video-page
 		video(controls)
 			source&attributes({'type': "video/mp4", 'src'=videoSrc})
+
+// https://webapplog.com/jade/
