@@ -11,3 +11,6 @@ function constructNav(JSONFile){
 function _constructNav(JSONFile, parentObject){
     var li = document.createElement("li")
 }
+
+
+//https://stackoverflow.com/questions/28256271/populate-ul-in-html-with-json-data
