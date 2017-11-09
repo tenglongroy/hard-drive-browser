@@ -18,7 +18,8 @@ router.get('/show-path', function(req, res, next) {
 /* for Ajax call, return specified file's data */
 router.get('/ajax-show-file', function(req, res, next) {
 	var objectName = req.query.objectName;
-	var fileExtension = path.extname(objectName).toLowerCase();
+	//var fileExtension = path.extname(objectName).toLowerCase();
+	var fileExtension = req.query.type;
 	var videoList = ['mp4', 'm4v', 'mpe', 'rmvb', 'rm', 'mkv', 'mov', 'wmv', 'flv', 'avi'];
 	var imageList = ['png', 'jpg', 'jpeg', 'jpe', 'bmp', 'tif', 'tiff', 'gif'];
 	var documentList = ['txt', 'pdf', ];
