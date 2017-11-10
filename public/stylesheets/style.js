@@ -14,17 +14,28 @@ function constructNav(JSONFile){
     var typeDiv = createTypeDiv(JSONFile['type']);
     pTag.appendChild(typeDiv);
 
-    _constructNav(JSONFile['desc'], pTag);
+    if(JSONFile['desc'] != null){
+        pTag.addClass('dropdown')
+        _constructNav(JSONFile['desc'], pTag);
+    }
 
     return pTag;
 }
 
 
 function _constructNav(JSONFile, parentObject){
-    var li = document.createElement("li")
+    var ul = document.createElement("ul");
+    var li = document.createElement("li");
+
 
 
     parentObject.addClass(li);
+    
+
+    if(JSONFile['desc'] != null){
+        pTag.addClass('dropdown')
+        _constructNav(JSONFile['desc'], pTag);
+    }
 }
 
 
